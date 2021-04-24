@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  feed:
+    image: futlive
+    build: ./commom/dockerfiles/services
+    hostname: feed
+    expose:
+      - '5000'
+    volumes:
+      - './services/feed:/services/feed'
+    command: python3 ./feed/server.py
+    ports:
+      - '5000:5000'
+  details:
+    image: futlive
+    build: ./commom/dockerfiles/services
+    hostname: details
+    expose:
+      - '5001'
+    ports:
+    volumes:
+      - './services/details:/services/details'
+    command: python3 ./details/server.py
+    ports:
+      - '5001:5001'
+  escalations:
+    image: futlive
+    build: ./commom/dockerfiles/services
+    hostname: escalations
+    expose:
+      - '5002'
+    volumes:
+      - './services/escalations:/services/escalations'
+    command: python3 ./escalations/server.py
+    ports:
+      - '5002:5002'
+  database:
+    image: mysqlfutlive
+    build: ./commom/dockerfiles/mysql
+    hostname: database
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+  files:
+    image: files
+    build: ./commom/dockerfiles/nginx
+    volumes:
+      - './commom/assets/images:/usr/share/nginx/html'
+    hostname: files
+    expose:
+      - '80'
+    ports:
+      - '80:80'
