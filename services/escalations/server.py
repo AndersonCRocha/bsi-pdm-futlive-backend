@@ -3,6 +3,7 @@ import mysql.connector as mysql
 
 app = Flask(__name__)
 
+IS_ALIVE = True
 MYSQL_SERVER = "database"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "admin"
@@ -27,10 +28,20 @@ def generatePlayerList(players):
 
 @app.route("/")
 def index():
+  if not IS_ALIVE:
+    return "Service temporarily unavailable"
+  
   return "Escalations service"
+
+@app.route("/is-alive")
+def isALive():
+  return jsonify(IS_ALIVE)
 
 @app.route("/escalation/<int:teamId>")
 def getAll(teamId):
+  if not IS_ALIVE:
+    return "Service temporarily unavailable"
+  
   connection = getConnection()
   cursor = connection.cursor(dictionary=True)
   

@@ -3,6 +3,7 @@ import mysql.connector as mysql
 
 app = Flask(__name__)
 
+IS_ALIVE = True
 MYSQL_SERVER = "database"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "admin"
@@ -37,10 +38,20 @@ def generateFeedItem(feed):
 
 @app.route("/")
 def index():
+  if not IS_ALIVE:
+    return "Service temporarily unavailable"
+  
   return "Feed service"
+
+@app.route("/is-alive")
+def isALive():
+  return jsonify(IS_ALIVE)
 
 @app.route("/feed-total")
 def getTotalGames():
+  if not IS_ALIVE:
+    return "Service temporarily unavailable"
+  
   connection = getConnection()
   cursor = connection.cursor(dictionary=True)
   
@@ -54,6 +65,9 @@ def getTotalGames():
   
 @app.route("/feed")
 def getAll():
+  if not IS_ALIVE:
+    return "Service temporarily unavailable"
+  
   page = int(request.args.get('page')) if request.args.get('page') else 1
   offset = (page - 1) * PER_PAGE
   
@@ -83,7 +97,7 @@ def getAll():
     LIMIT {offset}, {PER_PAGE}           
   """)
   feed = cursor.fetchall()
-  print(feed)
+  
   return jsonify(generateFeedItem(feed))
 
 if __name__ == '__main__':
